@@ -42,15 +42,15 @@
         name: "{{ current_user }}"
         shell: /bin/zsh
 
-    - name: Downloading plugins for ZSH
+    - name: Install Oh-my-zsh
+      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+    - name: Downloading plugins for Oh-My-ZSH
       shell: "git clone https://github.com/zsh-users/{{ item }}.git {{ zsh_custom }}/plugins/{{ item }}"
       loop:
         - zsh-syntax-highlighting
         - zsh-autosuggestions
       become: true
-
-    - name: Install Oh-my-zsh
-      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
     - name: Install powerline fonts
       apt:
