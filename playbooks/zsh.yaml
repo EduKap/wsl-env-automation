@@ -1,0 +1,83 @@
+- name: Install ZSH, Oh-my-zsh and Powerlevel10k + fonts
+  hosts: localhost
+  vars:
+    current_user: "{{ ansible_user_id }}"
+  tasks:
+
+    - name: "DEBUG: Ansible environment variables."
+      debug:
+        msg: "{{ ansible_env }}"
+
+    - name: "DEBUG: Remove any previous plugins"
+      shell: rm -rf "{{ item }}"
+      loop:
+        - $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+        - $ZSH_CUSTOM/plugins/zsh-autosuggestions
+        - /home/eduard/.oh-my-zsh
+      become: true
+
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Install curl
+      apt:
+        name: curl
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Install ZSH
+      apt:
+        name: zsh
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Print ZSH version
+      shell: zsh --version
+
+    - name: Set default shell
+      become: true
+      user:
+        name: eduard
+        shell: /bin/zsh
+
+    - name: Download plugins for zsh
+      shell: git clone {{ item }}
+      loop:
+        - "https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+        - "https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+      become: true
+
+    - name: Install Oh-my-zsh
+      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+    - name: Install powerline fonts
+      apt:
+        name: fonts-powerline
+        update_cache: true
+      become: true
+
+    - name: Install Powerlevel 10k
+      shell: "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k"
+
+    - name: Apply predefined p10k.zsh
+      copy:
+        src: zsh_templates/p10k.template
+        dest: ~/.p10k.zsh
+
+    - name: Apply predefined ~/.zshrc
+      copy:
+        src: zsh_templates/zshrc.template
+        dest: ~/.zshrc
+
+    - name: Logout of terminal
+      shell: exit
+
+    - name: Installation finished.
+      debug:
+        msg: Restart your terminal.
