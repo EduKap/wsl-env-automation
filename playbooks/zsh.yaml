@@ -42,11 +42,11 @@
         name: "{{ current_user }}"
         shell: /bin/zsh
 
-    - name: Download plugins for zsh
-      shell: "git clone {{ item }}"
+    - name: "Downloading '{{ item }}' plugin for ZSH"
+      shell: "git clone https://github.com/zsh-users/{{ item }}.git {{ zsh_custom }}/plugins/{{ item }}"
       loop:
-        - "https://github.com/zsh-users/zsh-syntax-highlighting.git {{ zsh_custom }}/plugins/zsh-syntax-highlighting"
-        - "https://github.com/zsh-users/zsh-autosuggestions.git {{ zsh_custom }}/plugins/zsh-autosuggestions"
+        - zsh-syntax-highlighting
+        - zsh-autosuggestions
       become: true
 
     - name: Install Oh-my-zsh
