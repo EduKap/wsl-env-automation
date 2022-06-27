@@ -2,18 +2,14 @@
   hosts: localhost
   vars:
     current_user: "{{ ansible_user_id }}"
+    zsh_custom: "/home/{{ current_user }}/.oh-my-zsh/custom"
   tasks:
-
-    - name: "DEBUG: Ansible environment variables."
-      debug:
-        msg: "{{ ansible_env }}"
-
     - name: "DEBUG: Remove any previous plugins"
       shell: rm -rf "{{ item }}"
       loop:
-        - $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-        - $ZSH_CUSTOM/plugins/zsh-autosuggestions
-        - /home/eduard/.oh-my-zsh
+        - "{{ zsh_custom }}/plugins/zsh-syntax-highlighting"
+        - "{{ zsh_custom }}/plugins/zsh-autosuggestions"
+        - /home/{{ current_user }}/.oh-my-zsh
       become: true
 
     - name: Install Git
@@ -43,14 +39,14 @@
     - name: Set default shell
       become: true
       user:
-        name: eduard
+        name: "{{ current_user }}"
         shell: /bin/zsh
 
     - name: Download plugins for zsh
-      shell: git clone {{ item }}
+      shell: "git clone {{ item }}"
       loop:
-        - "https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-        - "https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        - "https://github.com/zsh-users/zsh-syntax-highlighting.git {{ zsh_custom }}/plugins/zsh-syntax-highlighting"
+        - "https://github.com/zsh-users/zsh-autosuggestions.git {{ zsh_custom }}/plugins/zsh-autosuggestions"
       become: true
 
     - name: Install Oh-my-zsh
@@ -63,7 +59,7 @@
       become: true
 
     - name: Install Powerlevel 10k
-      shell: "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k"
+      shell: "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git {{ zsh_custom }}/themes/powerlevel10k"
 
     - name: Apply predefined p10k.zsh
       copy:
