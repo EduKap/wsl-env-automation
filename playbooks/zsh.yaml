@@ -42,7 +42,7 @@
         name: "{{ current_user }}"
         shell: /bin/zsh
 
-    - name: "Downloading '{{ item }}' plugin for ZSH"
+    - name: Downloading plugins for ZSH
       shell: "git clone https://github.com/zsh-users/{{ item }}.git {{ zsh_custom }}/plugins/{{ item }}"
       loop:
         - zsh-syntax-highlighting
